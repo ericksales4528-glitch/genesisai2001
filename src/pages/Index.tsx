@@ -81,7 +81,7 @@ export default function Index() {
   const [editingSiteId, setEditingSiteId] = useState<string | null>(editState?.siteId || null);
   const [editingProjectName, setEditingProjectName] = useState<string | null>(editState?.projectName || null);
   const [projectNameInput, setProjectNameInput] = useState<string>(() => buildSuggestedProjectName(initialData, editState?.projectName));
-  const [provider, setProvider] = useState<"vercel" | "cloudflare" | "render">("render");
+  const [provider, setProvider] = useState<"render">("render");
 
   useEffect(() => {
     const nextData = editState?.data || defaultData;
