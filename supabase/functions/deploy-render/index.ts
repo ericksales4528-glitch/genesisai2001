@@ -207,16 +207,16 @@ Deno.serve(async (req) => {
       }
       service = extractRenderService(svcJson);
     } else {
-      // Espera GitHub propagar e dispara deploy no commit exato que acabamos de fazer
-      await new Promise((r) => setTimeout(r, 3000));
+      // Dispara deploy imediato no commit exato (sem sleep, sem clear cache = mais rápido)
       await renderFetch(renderToken, `/services/${service.id}/deploys`, {
         method: 'POST',
         body: JSON.stringify({
-          clearCache: 'clear',
+          clearCache: 'do_not_clear',
           ...(newCommitSha ? { commitId: newCommitSha } : {}),
         }),
       });
     }
+
 
     service = (await fetchRenderService(renderToken, service?.id)) || service;
 
