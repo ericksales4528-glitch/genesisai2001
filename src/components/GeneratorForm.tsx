@@ -219,10 +219,10 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
   };
 
   return (
-    <div className="space-y-6 rounded-xl border border-border bg-card p-6 shadow-sm lg:p-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-bold text-foreground">Nexus Generator</h1>
-        <p className="text-sm text-muted-foreground">Preencha os dados oficiais da empresa para gerar o site.</p>
+        <h2 className="font-display text-2xl font-bold text-foreground">Configuração do negócio</h2>
+        <p className="text-sm text-muted-foreground">Preencha os dados oficiais da empresa para a GENESIS AI gerar o site.</p>
       </div>
 
       <div className="rounded-lg border border-primary/40 bg-primary/5 p-3 space-y-2">
