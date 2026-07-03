@@ -456,50 +456,6 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
       <div className="space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
         <label className="nexus-label">Publicar site</label>
 
-        <div>
-          <label className="nexus-label">Provedor de Hospedagem</label>
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-
-            <button
-              type="button"
-              onClick={() => onProviderChange("cloudflare")}
-              className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-                provider === "cloudflare"
-                  ? "border-primary bg-primary/20 text-primary"
-                  : "border-border bg-card text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              ☁ Cloudflare
-              <span className="block text-[10px] font-normal opacity-70">.pages.dev</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onProviderChange("vercel")}
-              className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-                provider === "vercel"
-                  ? "border-primary bg-primary/20 text-primary"
-                  : "border-border bg-card text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              ▲ Vercel
-              <span className="block text-[10px] font-normal opacity-70">.vercel.app</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onProviderChange("render")}
-              className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-                provider === "render"
-                  ? "border-primary bg-primary/20 text-primary"
-                  : "border-border bg-card text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              🟣 Render
-              <span className="block text-[10px] font-normal opacity-70">.onrender.com</span>
-            </button>
-          </div>
-
-        </div>
-
         <div className="flex gap-2">
           <input
             id="project-name"
@@ -518,27 +474,10 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
           <p className="text-[11px] text-muted-foreground">Ao editar um site publicado, o mesmo nome do projeto é reutilizado para atualizar a publicação existente.</p>
         )}
         <p className="text-xs text-muted-foreground">
-          O site ficará em <strong>{
-            provider === "vercel" ? `${projectName || "nome-do-site"}.vercel.app` :
-            provider === "cloudflare" ? (useCustomDomain ? `${projectName || "nome-do-site"}.${CUSTOM_DOMAIN}` : `${projectName || "nome-do-site"}.pages.dev`) :
-            `site-${projectName || "nome-do-site"}.onrender.com`
-          }</strong>
+          O site ficará em <strong>{`site-${projectName || "nome-do-site"}.onrender.com`}</strong> (hospedagem Render).
         </p>
 
-        {provider === "cloudflare" && (
-          <label className="flex items-start gap-2 rounded-md border border-emerald-700/40 bg-emerald-950/30 p-2.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={useCustomDomain}
-              onChange={e => setUseCustomDomain(e.target.checked)}
-              className="mt-0.5"
-            />
-            <div className="text-xs">
-              <p className="font-semibold text-emerald-300">✅ Usar domínio próprio ({CUSTOM_DOMAIN})</p>
-              <p className="text-emerald-200/70 mt-0.5">Aceito pelo Facebook Business. SSL leva 1-2 min pra ativar após publicar.</p>
-            </div>
-          </label>
-        )}
+
 
 
 
