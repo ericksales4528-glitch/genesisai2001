@@ -60,7 +60,7 @@ interface Props {
   onTemplateChange: (id: TemplateId) => void;
 }
 
-const CUSTOM_DOMAIN = "verificacaoempresarialltda.com.br";
+const CUSTOM_DOMAIN = "batba.com.br";
 
 export default function GeneratorForm({ data, onChange, onGenerate, onClear, onDownload, onPublish, isPublishing, publishedUrl, projectName, defaultProjectName, onProjectNameChange, provider, onProviderChange, templateId, onTemplateChange }: Props) {
   const set = (key: keyof CompanyData, value: string) => onChange({ ...data, [key]: value });
