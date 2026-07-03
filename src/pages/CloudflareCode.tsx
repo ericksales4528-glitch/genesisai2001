@@ -48,7 +48,7 @@ export default function CloudflareCode() {
   const [workerCode, setWorkerCode] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [projectNameInput, setProjectNameInput] = useState("");
-  const [provider, setProvider] = useState<"vercel" | "cloudflare" | "render">("cloudflare");
+  const [provider, setProvider] = useState<"render">("render");
 
   useEffect(() => {
     const html = renderTemplate(templateId, data);
