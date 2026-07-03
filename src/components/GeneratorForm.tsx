@@ -48,19 +48,17 @@ interface Props {
   onGenerate: () => void;
   onClear: () => void;
   onDownload: () => void;
-  onPublish: (projectName: string, provider: "vercel" | "cloudflare" | "render", customDomain?: string) => void;
+  onPublish: (projectName: string, provider: "render", customDomain?: string) => void;
   isPublishing: boolean;
   publishedUrl: string | null;
   projectName: string;
   defaultProjectName?: string;
   onProjectNameChange: (value: string) => void;
-  provider: "vercel" | "cloudflare" | "render";
-  onProviderChange: (provider: "vercel" | "cloudflare" | "render") => void;
+  provider: "render";
+  onProviderChange: (provider: "render") => void;
   templateId: TemplateId;
   onTemplateChange: (id: TemplateId) => void;
 }
-
-const CUSTOM_DOMAIN = "batba.com.br";
 
 export default function GeneratorForm({ data, onChange, onGenerate, onClear, onDownload, onPublish, isPublishing, publishedUrl, projectName, defaultProjectName, onProjectNameChange, provider, onProviderChange, templateId, onTemplateChange }: Props) {
   const set = (key: keyof CompanyData, value: string) => onChange({ ...data, [key]: value });
@@ -68,7 +66,10 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
   const [importText, setImportText] = useState("");
   const [cnpjLookup, setCnpjLookup] = useState("");
   const [cnpjLoading, setCnpjLoading] = useState(false);
-  const [useCustomDomain, setUseCustomDomain] = useState(true);
+
+  // manter referências pra evitar warnings de unused
+  void provider;
+  void onProviderChange;
 
   const triggerPublish = () => {
     const normalizedProjectName = projectName.trim();
@@ -77,9 +78,10 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
       return;
     }
 
-    const customDomain = provider === "cloudflare" && useCustomDomain ? CUSTOM_DOMAIN : undefined;
-    onPublish(normalizedProjectName, provider, customDomain);
+    onPublish(normalizedProjectName, "render");
   };
+
+
 
 
   const lookupCnpj = async () => {
@@ -454,50 +456,6 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
       <div className="space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
         <label className="nexus-label">Publicar site</label>
 
-        <div>
-          <label className="nexus-label">Provedor de Hospedagem</label>
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-
-            <button
-              type="button"
-              onClick={() => onProviderChange("cloudflare")}
-              className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-                provider === "cloudflare"
-                  ? "border-primary bg-primary/20 text-primary"
-                  : "border-border bg-card text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              ☁ Cloudflare
-              <span className="block text-[10px] font-normal opacity-70">.pages.dev</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onProviderChange("vercel")}
-              className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-                provider === "vercel"
-                  ? "border-primary bg-primary/20 text-primary"
-                  : "border-border bg-card text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              ▲ Vercel
-              <span className="block text-[10px] font-normal opacity-70">.vercel.app</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onProviderChange("render")}
-              className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-                provider === "render"
-                  ? "border-primary bg-primary/20 text-primary"
-                  : "border-border bg-card text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              🟣 Render
-              <span className="block text-[10px] font-normal opacity-70">.onrender.com</span>
-            </button>
-          </div>
-
-        </div>
-
         <div className="flex gap-2">
           <input
             id="project-name"
@@ -516,27 +474,10 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
           <p className="text-[11px] text-muted-foreground">Ao editar um site publicado, o mesmo nome do projeto é reutilizado para atualizar a publicação existente.</p>
         )}
         <p className="text-xs text-muted-foreground">
-          O site ficará em <strong>{
-            provider === "vercel" ? `${projectName || "nome-do-site"}.vercel.app` :
-            provider === "cloudflare" ? (useCustomDomain ? `${projectName || "nome-do-site"}.${CUSTOM_DOMAIN}` : `${projectName || "nome-do-site"}.pages.dev`) :
-            `site-${projectName || "nome-do-site"}.onrender.com`
-          }</strong>
+          O site ficará em <strong>{`site-${projectName || "nome-do-site"}.onrender.com`}</strong> (hospedagem Render).
         </p>
 
-        {provider === "cloudflare" && (
-          <label className="flex items-start gap-2 rounded-md border border-emerald-700/40 bg-emerald-950/30 p-2.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={useCustomDomain}
-              onChange={e => setUseCustomDomain(e.target.checked)}
-              className="mt-0.5"
-            />
-            <div className="text-xs">
-              <p className="font-semibold text-emerald-300">✅ Usar domínio próprio ({CUSTOM_DOMAIN})</p>
-              <p className="text-emerald-200/70 mt-0.5">Aceito pelo Facebook Business. SSL leva 1-2 min pra ativar após publicar.</p>
-            </div>
-          </label>
-        )}
+
 
 
 
