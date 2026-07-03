@@ -48,19 +48,17 @@ interface Props {
   onGenerate: () => void;
   onClear: () => void;
   onDownload: () => void;
-  onPublish: (projectName: string, provider: "vercel" | "cloudflare" | "render", customDomain?: string) => void;
+  onPublish: (projectName: string, provider: "render", customDomain?: string) => void;
   isPublishing: boolean;
   publishedUrl: string | null;
   projectName: string;
   defaultProjectName?: string;
   onProjectNameChange: (value: string) => void;
-  provider: "vercel" | "cloudflare" | "render";
-  onProviderChange: (provider: "vercel" | "cloudflare" | "render") => void;
+  provider: "render";
+  onProviderChange: (provider: "render") => void;
   templateId: TemplateId;
   onTemplateChange: (id: TemplateId) => void;
 }
-
-const CUSTOM_DOMAIN = "batba.com.br";
 
 export default function GeneratorForm({ data, onChange, onGenerate, onClear, onDownload, onPublish, isPublishing, publishedUrl, projectName, defaultProjectName, onProjectNameChange, provider, onProviderChange, templateId, onTemplateChange }: Props) {
   const set = (key: keyof CompanyData, value: string) => onChange({ ...data, [key]: value });
@@ -68,7 +66,10 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
   const [importText, setImportText] = useState("");
   const [cnpjLookup, setCnpjLookup] = useState("");
   const [cnpjLoading, setCnpjLoading] = useState(false);
-  const [useCustomDomain, setUseCustomDomain] = useState(true);
+
+  // manter referências pra evitar warnings de unused
+  void provider;
+  void onProviderChange;
 
   const triggerPublish = () => {
     const normalizedProjectName = projectName.trim();
@@ -77,9 +78,10 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
       return;
     }
 
-    const customDomain = provider === "cloudflare" && useCustomDomain ? CUSTOM_DOMAIN : undefined;
-    onPublish(normalizedProjectName, provider, customDomain);
+    onPublish(normalizedProjectName, "render");
   };
+
+
 
 
   const lookupCnpj = async () => {
