@@ -51,6 +51,31 @@ async function renderFetch(token: string, path: string, init: RequestInit = {}):
   });
 }
 
+function extractRenderService(payload: any): any {
+  return payload?.service || payload;
+}
+
+async function fetchRenderService(token: string, serviceId?: string): Promise<any | null> {
+  if (!serviceId) return null;
+
+  const res = await renderFetch(token, `/services/${serviceId}`);
+  if (!res.ok) return null;
+
+  const json = await res.json().catch(() => null);
+  return extractRenderService(json);
+}
+
+function resolveRenderUrl(service: any, repoName: string): string {
+  const rawUrl =
+    service?.serviceDetails?.url ||
+    service?.url ||
+    service?.domains?.find?.((domain: any) => domain?.name)?.name ||
+    (service?.slug ? `${service.slug}.onrender.com` : '') ||
+    `${repoName}.onrender.com`;
+
+  return String(rawUrl).startsWith('http') ? String(rawUrl) : `https://${rawUrl}`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
@@ -180,7 +205,7 @@ Deno.serve(async (req) => {
           error: `Render criar service: ${svcJson?.message || JSON.stringify(svcJson)}`,
         }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
-      service = svcJson?.service || svcJson;
+      service = extractRenderService(svcJson);
     } else {
       // Espera GitHub propagar e dispara deploy no commit exato que acabamos de fazer
       await new Promise((r) => setTimeout(r, 3000));
@@ -193,11 +218,9 @@ Deno.serve(async (req) => {
       });
     }
 
+    service = (await fetchRenderService(renderToken, service?.id)) || service;
 
-    const url: string =
-      service?.serviceDetails?.url ||
-      service?.url ||
-      `https://${repoName}.onrender.com`;
+    const url = resolveRenderUrl(service, repoName);
 
     return new Response(JSON.stringify({
       success: true,
