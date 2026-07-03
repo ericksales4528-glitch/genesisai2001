@@ -25,33 +25,42 @@ function AppNav() {
 
   return (
     <>
-      <nav className="bg-card border-b border-border">
-        <div className="mx-auto max-w-[1440px] flex items-center gap-1 px-4 md:px-8">
-          <span className="font-display text-sm font-bold text-foreground mr-4 py-3">Nexus</span>
-          <button
-            onClick={() => navigate("/")}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              isGerar ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            🛠 Gerar Site
-          </button>
-          <button
-            onClick={() => navigate("/meus-sites")}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              isMeus ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            📁 Meus Sites
-          </button>
-          <button
-            onClick={() => navigate("/cloudflare-code")}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              isCode ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            ☁️ Código Cloudflare
-          </button>
+      <nav className="sticky top-4 z-50 mx-auto mt-4 flex max-w-[1440px] items-center justify-between rounded-3xl border border-border/60 bg-card/60 p-3 px-4 backdrop-blur-xl md:mt-6 md:px-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[image:var(--gradient-plasma)] shadow-[var(--shadow-glow)]">
+            <div className="h-4 w-4 rotate-45 rounded-sm bg-background" />
+          </div>
+          <div className="flex flex-col leading-none">
+            <span className="font-display text-lg font-bold text-foreground">
+              GENESIS <span className="text-accent">AI</span>
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">gerador neural</span>
+          </div>
+        </div>
+
+        <div className="hidden rounded-2xl border border-border/60 bg-background/40 p-1.5 md:flex">
+          {[
+            { key: "gerar", label: "Gerar Site", active: isGerar, to: "/" },
+            { key: "meus", label: "Meus Sites", active: isMeus, to: "/meus-sites" },
+            { key: "code", label: "Código Cloudflare", active: isCode, to: "/cloudflare-code" },
+          ].map((t) => (
+            <button
+              key={t.key}
+              onClick={() => navigate(t.to)}
+              className={`rounded-xl px-5 py-2 text-sm font-medium transition-all ${
+                t.active
+                  ? "bg-primary text-primary-foreground shadow-[var(--shadow-plasma)]"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="hidden items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1.5 md:flex">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-accent">beta online</span>
         </div>
       </nav>
 
