@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 92%;
+    --card: 220 40% 13%;
+    --card-foreground: 210 40% 92%;
+    --popover: 220 40% 13%;
+    --popover-foreground: 210 40% 92%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 28% 20%;
+    --secondary-foreground: 210 40% 85%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 55%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 92%;
+    --destructive: 0 63% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 28% 20%;
+    --input: 215 28% 22%;
+    --ring: 217 91% 60%;
+    --radius: 0.75rem;
+    --surface: 222 47% 9%;
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 85%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 92%;
+    --sidebar-border: 215 28% 20%;
+    --sidebar-ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .nexus-label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground;
+  }
+  .nexus-input {
+    @apply w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all;
+  }
+  .nexus-select {
+    @apply w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer;
+  }
+  .nexus-textarea {
+    @apply w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none;
+  }
+  .font-display {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+}
