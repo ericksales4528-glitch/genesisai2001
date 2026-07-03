@@ -25,7 +25,7 @@ function AppNav() {
 
   return (
     <>
-      <nav className="sticky top-4 z-50 mx-auto mt-4 flex max-w-[1440px] items-center justify-between rounded-3xl border border-border/60 bg-card/60 p-3 px-4 backdrop-blur-xl md:mt-6 md:px-6">
+      <nav className="sticky top-4 z-50 mx-auto mt-4 flex max-w-[1440px] items-center justify-between rounded-3xl border border-border/60 bg-card p-3 px-4 md:mt-6 md:px-6">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[image:var(--gradient-plasma)] shadow-[var(--shadow-glow)]">
             <div className="h-4 w-4 rotate-45 rounded-sm bg-background" />
