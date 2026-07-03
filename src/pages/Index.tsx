@@ -250,8 +250,8 @@ export default function Index() {
       <div className="mx-auto flex max-w-[1440px] flex-col gap-6">
         {/* Hero */}
         <header className="bento-card p-8 md:p-10">
-          <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-primary/20 blur-[100px]" />
-          <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-accent/10 blur-[100px]" />
+          <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-primary/20 blur-2xl opacity-60" />
+          <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-accent/10 blur-2xl opacity-60" />
           <div className="relative z-10 flex flex-col gap-3">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" /> engine ativa
@@ -281,7 +281,7 @@ export default function Index() {
         {/* Bento principal */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <div className="bento-card p-6 md:p-8 lg:col-span-7">
-            <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-primary/10 blur-[80px]" />
+            <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-primary/10 blur-2xl opacity-60" />
             <div className="relative z-10">
               <GeneratorForm
                 data={data}
@@ -303,7 +303,7 @@ export default function Index() {
             </div>
           </div>
           <div className="bento-card p-4 md:p-6 lg:col-span-5" id="preview-panel">
-            <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-accent/10 blur-[100px]" />
+            <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-accent/10 blur-2xl opacity-60" />
             <div className="relative z-10">
               <PreviewPanel html={previewHtml} domain={domain} title={title} />
             </div>
