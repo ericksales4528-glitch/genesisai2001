@@ -246,40 +246,99 @@ export default function Index() {
   const title = data.razaoSocial ? `${data.razaoSocial} | Site Institucional` : "Nome da Empresa | Site Institucional";
 
   return (
-    <div className="min-h-screen bg-surface p-4 md:p-8">
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 lg:grid-cols-12">
-        <div className="lg:col-span-5 space-y-4">
-          {editingSiteId && (
-            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-primary">✏ Editando site existente</p>
-                <p className="text-xs text-muted-foreground">{editingProjectName ? `/s/${editingProjectName}` : data.razaoSocial}</p>
-              </div>
-              <button onClick={handleClear} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                ✕ Novo site
-              </button>
+    <div className="min-h-screen p-4 md:p-8">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-6">
+        {/* Hero */}
+        <header className="bento-card p-8 md:p-10">
+          <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-primary/20 blur-[100px]" />
+          <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-accent/10 blur-[100px]" />
+          <div className="relative z-10 flex flex-col gap-3">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" /> engine ativa
+            </span>
+            <h1 className="font-display text-4xl font-bold leading-tight text-foreground md:text-5xl">
+              A gênese do seu site<br />
+              acontece <span className="bg-[image:var(--gradient-plasma)] bg-clip-text text-transparent">agora</span>.
+            </h1>
+            <p className="max-w-2xl text-base text-muted-foreground">
+              Preencha o CNPJ e a GENESIS AI monta a identidade digital completa da empresa, publicando em domínio próprio em segundos.
+            </p>
+          </div>
+        </header>
+
+        {editingSiteId && (
+          <div className="flex items-center justify-between rounded-2xl border border-primary/40 bg-primary/10 p-4">
+            <div>
+              <p className="text-sm font-semibold text-primary">✏ Editando site existente</p>
+              <p className="text-xs text-muted-foreground">{editingProjectName ? `/s/${editingProjectName}` : data.razaoSocial}</p>
             </div>
-          )}
-          <GeneratorForm
-            data={data}
-            onChange={handleFormChange}
-            onGenerate={handleGenerate}
-            onClear={handleClear}
-            onDownload={handleDownload}
-            onPublish={handlePublish}
-            isPublishing={isPublishing}
-            publishedUrl={publishedUrl}
-            projectName={projectNameInput}
-            defaultProjectName={editingProjectName || undefined}
-            onProjectNameChange={setProjectNameInput}
-            provider={provider}
-            onProviderChange={setProvider}
-            templateId={templateId}
-            onTemplateChange={setTemplateId}
-          />
+            <button onClick={handleClear} className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+              ✕ Novo site
+            </button>
+          </div>
+        )}
+
+        {/* Bento principal */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="bento-card p-6 md:p-8 lg:col-span-7">
+            <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-primary/10 blur-[80px]" />
+            <div className="relative z-10">
+              <GeneratorForm
+                data={data}
+                onChange={handleFormChange}
+                onGenerate={handleGenerate}
+                onClear={handleClear}
+                onDownload={handleDownload}
+                onPublish={handlePublish}
+                isPublishing={isPublishing}
+                publishedUrl={publishedUrl}
+                projectName={projectNameInput}
+                defaultProjectName={editingProjectName || undefined}
+                onProjectNameChange={setProjectNameInput}
+                provider={provider}
+                onProviderChange={setProvider}
+                templateId={templateId}
+                onTemplateChange={setTemplateId}
+              />
+            </div>
+          </div>
+          <div className="bento-card p-4 md:p-6 lg:col-span-5" id="preview-panel">
+            <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-accent/10 blur-[100px]" />
+            <div className="relative z-10">
+              <PreviewPanel html={previewHtml} domain={domain} title={title} />
+            </div>
+          </div>
         </div>
-        <div className="lg:col-span-7" id="preview-panel">
-          <PreviewPanel html={previewHtml} domain={domain} title={title} />
+
+        {/* Stats bento row */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="bento-card flex items-center gap-4 p-5">
+            <div className="rounded-2xl bg-primary/20 p-3 text-primary">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Deploy médio</p>
+              <p className="font-display text-xl font-bold text-foreground">~45s</p>
+            </div>
+          </div>
+          <div className="bento-card flex items-center gap-4 p-5">
+            <div className="rounded-2xl bg-accent/20 p-3 text-accent">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2 4 4 8-8 4 4" /></svg>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Fonte</p>
+              <p className="font-display text-xl font-bold text-foreground">CNPJ oficial</p>
+            </div>
+          </div>
+          <div className="bento-card flex items-center gap-4 p-5">
+            <div className="rounded-2xl bg-primary/20 p-3 text-primary">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Hospedagem</p>
+              <p className="font-display text-xl font-bold text-foreground">Cloudflare Pages</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
