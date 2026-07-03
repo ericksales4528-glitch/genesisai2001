@@ -336,7 +336,7 @@ export default function Index() {
             </div>
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Hospedagem</p>
-              <p className="font-display text-xl font-bold text-foreground">Cloudflare Pages</p>
+              <p className="font-display text-xl font-bold text-foreground">Render</p>
             </div>
           </div>
         </div>
