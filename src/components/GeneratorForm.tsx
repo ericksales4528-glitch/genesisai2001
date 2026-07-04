@@ -4,6 +4,8 @@ import { TEMPLATE_LIST, TemplateId } from "@/lib/templates";
 import { parseCnpjDump } from "@/lib/parseCnpjData";
 import { toast } from "sonner";
 import { Copy, Check } from "lucide-react";
+import RenderAccountSelector from "@/components/RenderAccountSelector";
+import { RenderAccount } from "@/lib/renderAccounts";
 
 function CopyBtn({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
