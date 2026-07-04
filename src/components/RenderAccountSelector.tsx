@@ -25,8 +25,18 @@ export default function RenderAccountSelector({
     const list = getRenderAccounts();
     setAccounts(list);
     const sel = getSelectedRenderAccountId();
+    const selectedAccount = sel ? list.find((account) => account.id === sel) || null : null;
+
+    if (sel && !selectedAccount) {
+      setSelectedRenderAccountId(null);
+      setSelectedId(null);
+      onAccountChange?.(null);
+      return;
+    }
+
     setSelectedId(sel);
-  }, []);
+    onAccountChange?.(selectedAccount);
+  }, [onAccountChange]);
 
   const refresh = () => {
     const list = getRenderAccounts();
@@ -36,7 +46,7 @@ export default function RenderAccountSelector({
   const handleSelect = (id: string) => {
     setSelectedRenderAccountId(id);
     setSelectedId(id);
-    const acc = accounts.find((a) => a.id === id) || null;
+    const acc = getRenderAccounts().find((a) => a.id === id) || null;
     onAccountChange?.(acc);
   };
 
@@ -53,8 +63,11 @@ export default function RenderAccountSelector({
       apiKey: trimmedKey,
       ownerId: trimmedOwner,
     });
-    refresh();
-    handleSelect(newAcc.id);
+    const nextAccounts = getRenderAccounts();
+    setAccounts(nextAccounts);
+    setSelectedRenderAccountId(newAcc.id);
+    setSelectedId(newAcc.id);
+    onAccountChange?.(newAcc);
     setShowForm(false);
     setName("");
     setApiKey("");
