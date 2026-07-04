@@ -460,6 +460,8 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
       <div className="space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
         <label className="nexus-label">Publicar site</label>
 
+        <RenderAccountSelector onAccountChange={setSelectedAccount} />
+
         <div className="flex gap-2">
           <input
             id="project-name"
