@@ -48,7 +48,7 @@ interface Props {
   onGenerate: () => void;
   onClear: () => void;
   onDownload: () => void;
-  onPublish: (projectName: string, provider: "render", customDomain?: string) => void;
+  onPublish: (projectName: string, provider: "render", customDomain?: string, renderAccount?: { apiKey: string; ownerId: string } | null) => void;
   isPublishing: boolean;
   publishedUrl: string | null;
   projectName: string;
