@@ -100,6 +100,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    const renderToken = body.renderApiKey ? String(body.renderApiKey).trim() : envRenderToken;
+    const ownerId = body.renderOwnerId ? String(body.renderOwnerId).trim() : envOwnerId;
+
+    if (!renderToken || !ownerId) {
+      return new Response(JSON.stringify({
+        error: 'Faltando Render API Key e Owner ID. Adicione uma conta Render ou configure as variáveis de ambiente.',
+      }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     const slug = normalizeSlug(rawName);
     const repoName = `site-${slug}`;
 
