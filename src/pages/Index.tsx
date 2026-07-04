@@ -139,7 +139,7 @@ export default function Index() {
     saveAs(blob, filename);
   }, [data]);
 
-  const handlePublish = useCallback(async (projectName: string, selectedProvider: "vercel" | "cloudflare" | "render", customDomain?: string) => {
+  const handlePublish = useCallback(async (projectName: string, selectedProvider: "vercel" | "cloudflare" | "render", customDomain?: string, renderAccount?: { apiKey: string; ownerId: string } | null) => {
     const baseSlug = slugify(projectName);
     if (!baseSlug) {
       toast.error("Informe um nome válido para o site");
