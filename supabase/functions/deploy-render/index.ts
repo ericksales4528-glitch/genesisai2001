@@ -80,12 +80,12 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const ghToken = Deno.env.get('GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN');
-  const renderToken = Deno.env.get('RENDER_API_KEY');
-  const ownerId = Deno.env.get('RENDER_OWNER_ID');
+  const envRenderToken = Deno.env.get('RENDER_API_KEY');
+  const envOwnerId = Deno.env.get('RENDER_OWNER_ID');
 
-  if (!ghToken || !renderToken || !ownerId) {
+  if (!ghToken) {
     return new Response(JSON.stringify({
-      error: 'Faltando GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN, RENDER_API_KEY ou RENDER_OWNER_ID',
+      error: 'Faltando GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN',
     }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 
