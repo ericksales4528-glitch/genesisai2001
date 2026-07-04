@@ -123,9 +123,6 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const ghToken = Deno.env.get('GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN');
-  const envRenderToken = Deno.env.get('RENDER_API_KEY');
-  const envOwnerId = Deno.env.get('RENDER_OWNER_ID');
-
   if (!ghToken) {
     return jsonResponse({
       error: 'Faltando GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN',
@@ -141,13 +138,16 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'projectName e html são obrigatórios' }, 400);
     }
 
-    const renderToken = body.renderApiKey ? String(body.renderApiKey).trim() : envRenderToken;
-    const ownerId = body.renderOwnerId ? String(body.renderOwnerId).trim() : envOwnerId;
+    const renderToken = body.renderApiKey ? String(body.renderApiKey).trim() : '';
+    const ownerId = body.renderOwnerId ? String(body.renderOwnerId).trim() : '';
 
     if (!renderToken || !ownerId) {
       return jsonResponse({
-        error: 'Faltando Render API Key e Owner ID. Adicione uma conta Render ou configure as variáveis de ambiente.',
-      }, 400);
+        success: false,
+        error: 'Nenhuma conta Render foi enviada. Adicione e selecione uma conta Render em Publicar site antes de publicar.',
+        provider: 'render',
+        code: 'RENDER_ACCOUNT_REQUIRED',
+      });
     }
 
     const slug = normalizeSlug(rawName);
