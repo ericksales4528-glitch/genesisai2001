@@ -168,9 +168,15 @@ export default function Index() {
 
 
 
+      const deployBody: Record<string, unknown> = { projectName: baseSlug, html, extraFiles, customDomain };
+      if (renderAccount) {
+        deployBody.renderApiKey = renderAccount.apiKey;
+        deployBody.renderOwnerId = renderAccount.ownerId;
+      }
+
       const { data: deployRes, error: deployErr } = await supabase.functions.invoke(
         fnName,
-        { body: { projectName: baseSlug, html, extraFiles, customDomain } },
+        { body: deployBody },
       );
 
       if (deployErr) {
