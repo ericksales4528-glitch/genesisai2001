@@ -4,6 +4,8 @@ import { TEMPLATE_LIST, TemplateId } from "@/lib/templates";
 import { parseCnpjDump } from "@/lib/parseCnpjData";
 import { toast } from "sonner";
 import { Copy, Check } from "lucide-react";
+import RenderAccountSelector from "@/components/RenderAccountSelector";
+import { RenderAccount } from "@/lib/renderAccounts";
 
 function CopyBtn({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
@@ -48,7 +50,7 @@ interface Props {
   onGenerate: () => void;
   onClear: () => void;
   onDownload: () => void;
-  onPublish: (projectName: string, provider: "render", customDomain?: string) => void;
+  onPublish: (projectName: string, provider: "render", customDomain?: string, renderAccount?: { apiKey: string; ownerId: string } | null) => void;
   isPublishing: boolean;
   publishedUrl: string | null;
   projectName: string;
@@ -71,6 +73,8 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
   void provider;
   void onProviderChange;
 
+  const [selectedAccount, setSelectedAccount] = useState<RenderAccount | null>(null);
+
   const triggerPublish = () => {
     const normalizedProjectName = projectName.trim();
     if (!normalizedProjectName) {
@@ -78,7 +82,7 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
       return;
     }
 
-    onPublish(normalizedProjectName, "render");
+    onPublish(normalizedProjectName, "render", undefined, selectedAccount);
   };
 
 
@@ -455,6 +459,8 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
 
       <div className="space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
         <label className="nexus-label">Publicar site</label>
+
+        <RenderAccountSelector onAccountChange={setSelectedAccount} />
 
         <div className="flex gap-2">
           <input

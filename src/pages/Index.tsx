@@ -139,7 +139,7 @@ export default function Index() {
     saveAs(blob, filename);
   }, [data]);
 
-  const handlePublish = useCallback(async (projectName: string, selectedProvider: "vercel" | "cloudflare" | "render", customDomain?: string) => {
+  const handlePublish = useCallback(async (projectName: string, selectedProvider: "vercel" | "cloudflare" | "render", customDomain?: string, renderAccount?: { apiKey: string; ownerId: string } | null) => {
     const baseSlug = slugify(projectName);
     if (!baseSlug) {
       toast.error("Informe um nome válido para o site");
@@ -168,9 +168,15 @@ export default function Index() {
 
 
 
+      const deployBody: Record<string, unknown> = { projectName: baseSlug, html, extraFiles, customDomain };
+      if (renderAccount) {
+        deployBody.renderApiKey = renderAccount.apiKey;
+        deployBody.renderOwnerId = renderAccount.ownerId;
+      }
+
       const { data: deployRes, error: deployErr } = await supabase.functions.invoke(
         fnName,
-        { body: { projectName: baseSlug, html, extraFiles, customDomain } },
+        { body: deployBody },
       );
 
       if (deployErr) {

@@ -80,12 +80,12 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const ghToken = Deno.env.get('GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN');
-  const renderToken = Deno.env.get('RENDER_API_KEY');
-  const ownerId = Deno.env.get('RENDER_OWNER_ID');
+  const envRenderToken = Deno.env.get('RENDER_API_KEY');
+  const envOwnerId = Deno.env.get('RENDER_OWNER_ID');
 
-  if (!ghToken || !renderToken || !ownerId) {
+  if (!ghToken) {
     return new Response(JSON.stringify({
-      error: 'Faltando GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN, RENDER_API_KEY ou RENDER_OWNER_ID',
+      error: 'Faltando GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN',
     }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 
@@ -98,6 +98,15 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'projectName e html são obrigatórios' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    const renderToken = body.renderApiKey ? String(body.renderApiKey).trim() : envRenderToken;
+    const ownerId = body.renderOwnerId ? String(body.renderOwnerId).trim() : envOwnerId;
+
+    if (!renderToken || !ownerId) {
+      return new Response(JSON.stringify({
+        error: 'Faltando Render API Key e Owner ID. Adicione uma conta Render ou configure as variáveis de ambiente.',
+      }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     const slug = normalizeSlug(rawName);
