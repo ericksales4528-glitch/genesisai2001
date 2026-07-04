@@ -73,6 +73,8 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
   void provider;
   void onProviderChange;
 
+  const [selectedAccount, setSelectedAccount] = useState<RenderAccount | null>(null);
+
   const triggerPublish = () => {
     const normalizedProjectName = projectName.trim();
     if (!normalizedProjectName) {
@@ -80,7 +82,7 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
       return;
     }
 
-    onPublish(normalizedProjectName, "render");
+    onPublish(normalizedProjectName, "render", undefined, selectedAccount);
   };
 
 
