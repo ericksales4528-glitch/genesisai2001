@@ -5,7 +5,7 @@ import { parseCnpjDump } from "@/lib/parseCnpjData";
 import { toast } from "sonner";
 import { Copy, Check } from "lucide-react";
 import RenderAccountSelector from "@/components/RenderAccountSelector";
-import { RenderAccount } from "@/lib/renderAccounts";
+import { RenderAccount, getSelectedRenderAccount } from "@/lib/renderAccounts";
 
 function CopyBtn({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
@@ -82,7 +82,13 @@ export default function GeneratorForm({ data, onChange, onGenerate, onClear, onD
       return;
     }
 
-    onPublish(normalizedProjectName, "render", undefined, selectedAccount);
+    const account = getSelectedRenderAccount() || selectedAccount;
+    if (!account?.apiKey?.trim() || !account?.ownerId?.trim()) {
+      toast.error("Adicione e selecione uma conta Render antes de publicar");
+      return;
+    }
+
+    onPublish(normalizedProjectName, "render", undefined, account);
   };
 
 
