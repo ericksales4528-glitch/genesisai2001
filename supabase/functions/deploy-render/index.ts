@@ -264,7 +264,7 @@ Deno.serve(async (req) => {
           success: false,
           error: `Render criar service: ${renderErrorMessage(svcJson, createSvc.status)}`,
           provider: 'render',
-        }, createSvc.status);
+        });
       }
       service = extractRenderService(svcJson);
     } else {
