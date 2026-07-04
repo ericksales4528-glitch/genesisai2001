@@ -229,7 +229,7 @@ Deno.serve(async (req) => {
         success: false,
         error: `Render listar services: ${renderErrorMessage(listJson, listRes.status)}`,
         provider: 'render',
-      }, listRes.status);
+      });
     }
     let existing: any = null;
     if (Array.isArray(listJson)) {
