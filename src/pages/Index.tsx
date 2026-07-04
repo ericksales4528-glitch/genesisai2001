@@ -183,7 +183,23 @@ export default function Index() {
         const rawContext = (deployErr as { context?: unknown }).context;
         let backendMessage = "";
 
-        if (typeof rawContext === "string") {
+        // supabase-js v2: FunctionsHttpError.context é um Response
+        if (rawContext instanceof Response) {
+          try {
+            const cloned = rawContext.clone();
+            const text = await cloned.text();
+            if (text) {
+              try {
+                const parsed = JSON.parse(text) as { error?: string };
+                backendMessage = parsed.error || text;
+              } catch {
+                backendMessage = text;
+              }
+            }
+          } catch {
+            /* noop */
+          }
+        } else if (typeof rawContext === "string") {
           try {
             const parsed = JSON.parse(rawContext) as { error?: string };
             backendMessage = parsed.error || "";

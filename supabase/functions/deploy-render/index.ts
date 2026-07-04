@@ -229,7 +229,7 @@ Deno.serve(async (req) => {
         success: false,
         error: `Render listar services: ${renderErrorMessage(listJson, listRes.status)}`,
         provider: 'render',
-      }, listRes.status);
+      });
     }
     let existing: any = null;
     if (Array.isArray(listJson)) {
@@ -264,7 +264,7 @@ Deno.serve(async (req) => {
           success: false,
           error: `Render criar service: ${renderErrorMessage(svcJson, createSvc.status)}`,
           provider: 'render',
-        }, createSvc.status);
+        });
       }
       service = extractRenderService(svcJson);
     } else {
@@ -285,7 +285,7 @@ Deno.serve(async (req) => {
           success: false,
           error: `Render criar deploy: ${renderErrorMessage(deployJson, deployRes.status)}`,
           provider: 'render',
-        }, deployRes.status);
+        });
       }
     }
 
