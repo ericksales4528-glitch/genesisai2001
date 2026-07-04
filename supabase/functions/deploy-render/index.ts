@@ -285,7 +285,7 @@ Deno.serve(async (req) => {
           success: false,
           error: `Render criar deploy: ${renderErrorMessage(deployJson, deployRes.status)}`,
           provider: 'render',
-        }, deployRes.status);
+        });
       }
     }
 
