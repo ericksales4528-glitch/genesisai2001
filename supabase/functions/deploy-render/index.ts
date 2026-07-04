@@ -55,6 +55,49 @@ function extractRenderService(payload: any): any {
   return payload?.service || payload;
 }
 
+function jsonResponse(payload: Record<string, unknown>, status = 200): Response {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
+async function readResponsePayload(res: Response): Promise<any> {
+  const text = await res.text().catch(() => '');
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { message: text };
+  }
+}
+
+function renderErrorMessage(payload: any, status: number): string {
+  const raw = payload?.message || payload?.error || payload?.errors?.[0]?.message || JSON.stringify(payload || { status });
+  return typeof raw === 'string' ? raw : JSON.stringify(raw);
+}
+
+function renderUnavailableResponse(action: string, res: Response, payload: any): Response | null {
+  const msg = renderErrorMessage(payload, res.status);
+  const retryAfter = res.headers.get('retry-after');
+  const rateLimited = res.status === 429 || /rate\s*limit|too many requests/i.test(msg);
+  const transient = rateLimited || res.status >= 500;
+
+  if (!transient) return null;
+
+  return jsonResponse({
+    success: false,
+    fallback: true,
+    error: rateLimited
+      ? 'Limite da Render atingido. Aguarde alguns minutos ou use outra conta Render em Publicar site.'
+      : 'A Render está temporariamente indisponível. Tente publicar novamente em alguns minutos.',
+    code: rateLimited ? 'RENDER_RATE_LIMITED' : 'RENDER_SERVICE_UNAVAILABLE',
+    provider: 'render',
+    action,
+    retryAfter,
+  });
+}
+
 async function fetchRenderService(token: string, serviceId?: string): Promise<any | null> {
   if (!serviceId) return null;
 
@@ -84,9 +127,9 @@ Deno.serve(async (req) => {
   const envOwnerId = Deno.env.get('RENDER_OWNER_ID');
 
   if (!ghToken) {
-    return new Response(JSON.stringify({
+    return jsonResponse({
       error: 'Faltando GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN',
-    }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }, 500);
   }
 
   try {
@@ -95,18 +138,16 @@ Deno.serve(async (req) => {
     const html = String(body.html || '');
     const extraFiles: { path: string; content: string }[] = Array.isArray(body.extraFiles) ? body.extraFiles : [];
     if (!rawName || !html) {
-      return new Response(JSON.stringify({ error: 'projectName e html são obrigatórios' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return jsonResponse({ error: 'projectName e html são obrigatórios' }, 400);
     }
 
     const renderToken = body.renderApiKey ? String(body.renderApiKey).trim() : envRenderToken;
     const ownerId = body.renderOwnerId ? String(body.renderOwnerId).trim() : envOwnerId;
 
     if (!renderToken || !ownerId) {
-      return new Response(JSON.stringify({
+      return jsonResponse({
         error: 'Faltando Render API Key e Owner ID. Adicione uma conta Render ou configure as variáveis de ambiente.',
-      }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }, 400);
     }
 
     const slug = normalizeSlug(rawName);
@@ -116,9 +157,7 @@ Deno.serve(async (req) => {
     const userRes = await ghFetch(ghToken, '/user');
     const userJson = await userRes.json();
     if (!userRes.ok) {
-      return new Response(JSON.stringify({ error: `GitHub /user: ${userJson?.message || userRes.status}` }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return jsonResponse({ error: `GitHub /user: ${userJson?.message || userRes.status}` }, 500);
     }
     const ghLogin: string = userJson.login;
 
@@ -138,9 +177,7 @@ Deno.serve(async (req) => {
       });
       if (!createRes.ok) {
         const j = await createRes.json();
-        return new Response(JSON.stringify({ error: `GitHub criar repo: ${j?.message || createRes.status}` }), {
-          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        return jsonResponse({ error: `GitHub criar repo: ${j?.message || createRes.status}` }, 500);
       }
       await new Promise((r) => setTimeout(r, 1500));
       repoExists = true;
@@ -183,7 +220,17 @@ Deno.serve(async (req) => {
 
     // 4) Verificar se já existe um service no Render para esse repo/nome
     const listRes = await renderFetch(renderToken, `/services?name=${encodeURIComponent(repoName)}&limit=20`);
-    const listJson = await listRes.json();
+    const listJson = await readResponsePayload(listRes);
+    if (!listRes.ok) {
+      const fallback = renderUnavailableResponse('list_services', listRes, listJson);
+      if (fallback) return fallback;
+
+      return jsonResponse({
+        success: false,
+        error: `Render listar services: ${renderErrorMessage(listJson, listRes.status)}`,
+        provider: 'render',
+      }, listRes.status);
+    }
     let existing: any = null;
     if (Array.isArray(listJson)) {
       existing = listJson.find((it: any) => it?.service?.name === repoName)?.service || null;
@@ -208,22 +255,38 @@ Deno.serve(async (req) => {
           },
         }),
       });
-      const svcJson = await createSvc.json();
+      const svcJson = await readResponsePayload(createSvc);
       if (!createSvc.ok) {
-        return new Response(JSON.stringify({
-          error: `Render criar service: ${svcJson?.message || JSON.stringify(svcJson)}`,
-        }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        const fallback = renderUnavailableResponse('create_service', createSvc, svcJson);
+        if (fallback) return fallback;
+
+        return jsonResponse({
+          success: false,
+          error: `Render criar service: ${renderErrorMessage(svcJson, createSvc.status)}`,
+          provider: 'render',
+        }, createSvc.status);
       }
       service = extractRenderService(svcJson);
     } else {
       // Dispara deploy imediato no commit exato (sem sleep, sem clear cache = mais rápido)
-      await renderFetch(renderToken, `/services/${service.id}/deploys`, {
+      const deployRes = await renderFetch(renderToken, `/services/${service.id}/deploys`, {
         method: 'POST',
         body: JSON.stringify({
           clearCache: 'do_not_clear',
           ...(newCommitSha ? { commitId: newCommitSha } : {}),
         }),
       });
+      const deployJson = await readResponsePayload(deployRes);
+      if (!deployRes.ok) {
+        const fallback = renderUnavailableResponse('create_deploy', deployRes, deployJson);
+        if (fallback) return fallback;
+
+        return jsonResponse({
+          success: false,
+          error: `Render criar deploy: ${renderErrorMessage(deployJson, deployRes.status)}`,
+          provider: 'render',
+        }, deployRes.status);
+      }
     }
 
 
@@ -231,18 +294,16 @@ Deno.serve(async (req) => {
 
     const url = resolveRenderUrl(service, repoName);
 
-    return new Response(JSON.stringify({
+    return jsonResponse({
       success: true,
       provider: 'render',
       projectName: slug,
       url,
       repoUrl,
       serviceId: service?.id ?? null,
-    }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ error: msg }, 500);
   }
 });
