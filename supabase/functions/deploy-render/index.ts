@@ -138,8 +138,9 @@ Deno.serve(async (req) => {
     const html = String(body.html || '');
     const extraFiles: { path: string; content: string }[] = Array.isArray(body.extraFiles) ? body.extraFiles : [];
     if (!rawName || !html) {
-      return jsonResponse({ error: 'projectName e html são obrigatórios' }, 400);
+      return jsonResponse({ success: false, error: 'projectName e html são obrigatórios', code: 'INVALID_INPUT' });
     }
+
 
     const renderToken = body.renderApiKey ? String(body.renderApiKey).trim() : '';
     const ownerId = body.renderOwnerId ? String(body.renderOwnerId).trim() : '';
