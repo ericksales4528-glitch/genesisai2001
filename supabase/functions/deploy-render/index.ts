@@ -159,9 +159,18 @@ Deno.serve(async (req) => {
 
     // 1) Descobrir usuário do GitHub
     const userRes = await ghFetch(ghToken, '/user');
-    const userJson = await userRes.json();
+    const userJson = await userRes.json().catch(() => null);
     if (!userRes.ok) {
-      return jsonResponse({ error: `GitHub /user: ${userJson?.message || userRes.status}` }, 500);
+      const ghMsg = String(userJson?.message || userRes.status);
+      const invalidToken = userRes.status === 401 || /bad credentials/i.test(ghMsg);
+      return jsonResponse({
+        success: false,
+        provider: 'render',
+        code: invalidToken ? 'GITHUB_TOKEN_INVALID' : 'GITHUB_ERROR',
+        error: invalidToken
+          ? 'O token do GitHub está inválido ou expirado. Gere um novo fine-grained token (Contents + Administration: Read and write) e atualize o secret GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN.'
+          : `GitHub /user: ${ghMsg}`,
+      });
     }
     const ghLogin: string = userJson.login;
 
@@ -180,12 +189,18 @@ Deno.serve(async (req) => {
         }),
       });
       if (!createRes.ok) {
-        const j = await createRes.json();
-        return jsonResponse({ error: `GitHub criar repo: ${j?.message || createRes.status}` }, 500);
+        const j = await createRes.json().catch(() => null);
+        return jsonResponse({
+          success: false,
+          provider: 'render',
+          code: 'GITHUB_REPO_ERROR',
+          error: `GitHub criar repo: ${j?.message || createRes.status}`,
+        });
       }
       await new Promise((r) => setTimeout(r, 1500));
       repoExists = true;
     }
+
 
     // Helper: upsert de arquivo no repo
     async function upsertFile(path: string, content: string): Promise<string | undefined> {
