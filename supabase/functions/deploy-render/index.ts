@@ -323,6 +323,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-    return jsonResponse({ error: msg }, 500);
+    return jsonResponse({ success: false, provider: 'render', code: 'UNEXPECTED_ERROR', error: msg });
   }
+
 });
