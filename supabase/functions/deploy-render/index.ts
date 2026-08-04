@@ -125,9 +125,12 @@ Deno.serve(async (req) => {
   const ghToken = Deno.env.get('GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN');
   if (!ghToken) {
     return jsonResponse({
-      error: 'Faltando GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN',
-    }, 500);
+      success: false,
+      code: 'GITHUB_TOKEN_MISSING',
+      error: 'Token do GitHub não configurado. Cadastre um novo GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN.',
+    });
   }
+
 
   try {
     const body = await req.json().catch(() => ({}));
