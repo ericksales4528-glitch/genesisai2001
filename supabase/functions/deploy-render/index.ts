@@ -122,7 +122,9 @@ function resolveRenderUrl(service: any, repoName: string): string {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const ghToken = Deno.env.get('GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN');
+  const ghToken =
+    Deno.env.get('GITHUB_PERSONAL_ACCESS_TOKEN') ||
+    Deno.env.get('GITHUB_FINE_GRAINED_PERSONAL_ACCESS_TOKEN');
   if (!ghToken) {
     return jsonResponse({
       success: false,
